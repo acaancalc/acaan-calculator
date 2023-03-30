@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACAAN CALC</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        input, button, select {
+            font-size: 24px;
+            padding: 8px 16px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ACAAN CALC</h1>
+    <select id="stackSelector">
+        <option value="f5Stack">F5 Stack</option>
+        <option value="mnemonicaStack">Mnemonica Stack</option>
+    </select>
+    <br />
+    <input type="text" id="cardValue" placeholder="Card Value" />
+    <br />
+    <input type="number" id="targetPosition" placeholder="Target Position" />
+    <br />
+    <button id="calculateBtn">Calculate</button>
+    <p id="output"></p>
+
+    <script>
+        const f5Stack = [
+          "10H", "KC", "JD", "7H", "10C", "AS", "4H", "7C", "4S", "AD",
+          "AH", "4C", "7S", "4D", "AC", "10S", "7D", "JH", "KS", "10D",
+          "8H", "JC", "KD", "5H", "8C", "3S", "2H", "5C", "6S", "3D",
+          "2C", "9S", "6D", "QH", "QS", "9D", "9H", "QC", "QD", "6H",
+          "9C", "2S", "3H", "6C", "5S", "2D", "3C", "8S", "5D", "KH",
+          "JS", "8D"
+        ];
+
+        const mnemonicaStack = [
+          "4C", "2H", "7D", "3C", "4H", "6D", "AH", "8C", "TS", "9H",
+          "8D", "JC", "5H", "3S", "QD", "2D", "JS", "2C", "7H", "8H",
+          "5S", "6H", "QS", "3H", "9S", "6C", "KD", "AS", "4D", "5D",
+          "AC", "7C", "KH", "9C", "9D", "TC", "8S", "3D", "QH", "5C",
+          "KS", "6S", "JH", "7S", "4S", "AD", "KC", "TD", "TH", "JD",
+          "9H", "5H", "QD", "8D"
+        ];
+
+        const stacks = {
+          f5Stack: f5Stack,
+          mnemonicaStack: mnemonicaStack
+        };
+
+        function calculateCut(stack, cardValue, targetPosition) {
+            const currentPosition = stack.indexOf(cardValue) + 1;
+            let cutCount;
+
+            if (targetPosition >= currentPosition) {
+                               cutCount = 52 - (targetPosition - currentPosition);
+            } else {
+                cutCount = currentPosition - targetPosition;
+            }
+
+            const cutCard = stack[(cutCount - 1) % 52];
+
+            return {
+                cutCount: cutCount,
+                cutCard: cutCard
+            };
+        }
+
+        document.getElementById("calculateBtn").addEventListener("click", function (event) {
+            event.preventDefault();
+
+            const selectedStack = document.getElementById("stackSelector").value;
+            const cardValue = document.getElementById("cardValue").value.toUpperCase();
+            const targetPosition = parseInt(document.getElementById("targetPosition").value, 10);
+
+            if (stacks[selectedStack].includes(cardValue) && targetPosition >= 1 && targetPosition <= 52) {
+                const result = calculateCut(stacks[selectedStack], cardValue, targetPosition);
+                const outputText = `Cut ${result.cutCount} cards from top to bottom, up to and including ${result.cutCard}.`;
+
+                document.getElementById("output").innerHTML = outputText;
+            } else {
+                document.getElementById("output").textContent = "Invalid input. Please make sure you enter a valid card value and target position.";
+            }
+        });
+    </script>
